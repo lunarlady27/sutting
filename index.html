@@ -188,7 +188,7 @@ details{font-size:13px;opacity:.85;margin-bottom:14px}summary{cursor:pointer;fon
 <label class="sens">시점 감도 <input type="range" id="sens" min="0.3" max="2.5" step="0.1" value="1"><b id="sensV">1.0</b></label>
 <p class="lbl">총 스킨</p><div class="skins" id="skins"></div><p class="lbl">조준점 색</p><div class="xhc" id="xhc"></div>
 <label class="tog"><input type="checkbox" id="voiceOn"> 아군 음성 콜아웃 (AI 음성 · 지원되는 브라우저만)</label>
-<div id="menuMis"></div><div class="row2" style="margin-bottom:8px"><button class="cta alt" id="statsBtn">내 기록 · 업적</button><button class="cta alt" id="boardBtn" style="display:none">친구 랭킹</button></div><div class="row2"><button class="cta alt" id="tutBtn">튜토리얼</button><button class="cta alt" id="range">사격장 연습</button><button class="cta alt" id="mpOpen">친구랑 멀티</button><button class="cta" id="next">요원 선택하기</button></div></div>
+<div id="menuMis"></div><div class="row2" style="margin-bottom:8px"><button class="cta alt" id="statsBtn">내 기록 · 업적</button><button class="cta alt" id="boardBtn" style="display:none">친구 랭킹</button><button class="cta alt" id="acctBtn" style="display:none">로그인 · 회원가입</button></div><div class="row2"><button class="cta alt" id="tutBtn">튜토리얼</button><button class="cta alt" id="range">사격장 연습</button><button class="cta alt" id="mpOpen">친구랑 멀티</button><button class="cta" id="next">요원 선택하기</button></div></div>
 <div class="card" id="mpCard" style="display:none"><h1>친구랑 멀티</h1><p class="sub">같은 방 코드로 들어온 친구들과 팀 데스매치</p>
 <p id="mpStat"></p>
 <p class="lbl">닉네임</p><input id="mpNick" class="inp" maxlength="10" placeholder="게임에서 보일 이름">
@@ -211,6 +211,16 @@ details{font-size:13px;opacity:.85;margin-bottom:14px}summary{cursor:pointer;fon
 <label class="tog"><input type="checkbox" id="oFps"> 화면에 FPS(초당 프레임) 표시</label>
 <p class="lbl">스프레이 그림</p><div class="xhc" id="oSpr"></div>
 <div class="row2"><button class="cta" id="setGo">계속하기</button><button class="cta alt" id="setMenu">메인 메뉴로</button></div></div>
+<div class="card" id="acctCard" style="display:none"><h1>계정</h1><p class="sub">로그인하면 레벨 · 코인 · 랭크가 어느 기기에서든 이어져요</p>
+<div id="acForm"><p class="lbl">이메일</p><input id="acEmail" class="inp" type="email" autocomplete="email" placeholder="you@example.com">
+<p class="lbl">비밀번호 (6자 이상)</p><input id="acPw" class="inp" type="password" autocomplete="current-password">
+<p class="lbl">닉네임 (회원가입할 때만)</p><input id="acNick" class="inp" maxlength="10" placeholder="게임에서 보일 이름">
+<div class="row2"><button class="cta" id="acLogin">로그인</button><button class="cta alt" id="acSignup">회원가입</button></div>
+<button class="cta alt" id="acReset" style="margin-top:8px;min-height:44px;font-size:15px">비밀번호를 잊었어요</button></div>
+<div id="acIn" style="display:none"><p style="font-size:18px;font-weight:700" id="acWho"></p><p id="acAdm" style="margin:6px 0 10px;opacity:.85"></p>
+<p class="lbl">내 계정 ID (관리자 지정할 때 필요)</p><p id="acUid" style="font-family:monospace;font-size:13px;background:#15110d;padding:8px 10px;border-radius:8px;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text"></p>
+<button class="cta alt" id="acOut" style="margin-top:10px">로그아웃</button></div>
+<p id="acMsg" style="margin-top:10px;font-weight:700"></p><button class="cta alt" id="acBack" style="margin-top:8px">뒤로</button></div>
 <div class="card" id="boardCard" style="display:none"><h1>친구 랭킹</h1><p class="sub">이 사이트에서 플레이한 모든 사람 · 랭크와 레벨 순</p><div id="boardBody"></div><button class="cta alt" id="boardBack" style="margin-top:12px">뒤로</button></div>
 <div class="card" id="statsCard" style="display:none"><h1>내 기록</h1><p class="sub">이 기기에 저장돼요</p><div id="stBody"></div><button class="cta alt" id="stBack" style="margin-top:12px">뒤로</button></div>
 <div class="card" id="over" style="display:none"><p id="res"></p><p class="sub" id="ovSub"></p><p id="ovTip" style="font-size:14px;opacity:.8;margin-bottom:10px"></p><div class="ai" id="overAI" style="display:none"></div><button class="cta alt" id="coachBtn" style="margin-bottom:8px">AI 코치 분석 받기</button>
@@ -536,7 +546,7 @@ function checkWin(){if(phase!=='play'||S.mode==='range'||S.mode==='tdm'||S.mode=
 function overScreen(){if(S.mode==='range')return rangeOver();progMatch(S.realWin!==undefined?S.realWin:S.us>S.them);phase='over';$('overAI').style.display='none';$('coachBtn').style.display='block';try{document.exitPointerLock()}catch(e){}const w=S.us>S.them;$('res').textContent=w?'승리':'패배';$('res').style.color=w?'var(--teal)':'var(--red)';
  $('ovSub').textContent=`${MODES.find(m=>m.k===(S.sub||S.mode)).n} · ${CURMAP.n} · ${S.us} : ${S.them} · 난이도 ${D.n} · ${AG.n} · +${S.xpGain||0} XP${S.rrGain?` · ${S.rrGain>0?'+':''}${S.rrGain} RR`:''}`;$('ovTip').textContent=w?(D.k==='hell'?'지옥 난이도 승리! 진짜 고수예요.':'다음 난이도에 도전해 보세요.'):'아군과 같이 움직이고, 스킬로 길을 연 다음 들어가 보세요.';
  show('over')}
-function show(id){for(const c of['card','agentCard','over','mpCard','statsCard','setCard','boardCard'])$(c).style.display=c===id?'block':'none';$('ov').classList.remove('hide')}
+function show(id){for(const c of['card','agentCard','over','mpCard','statsCard','setCard','boardCard','acctCard'])$(c).style.display=c===id?'block':'none';$('ov').classList.remove('hide')}
 function start(){if(S)S.tut=0;$('tutBox').style.display='none';loadMap(pickMap());setTimeout(progStart,0);$('again').onclick=start;$('again').textContent='다시 하기';try{AC=AC||new(window.AudioContext||window.webkitAudioContext)()}catch(e){}$('ov').classList.add('hide');P=null;newMatch()}
 
 /* ---------- menus ---------- */
@@ -551,26 +561,26 @@ renderDiff();renderAgents();
 function renderXH(){$('xhc').innerHTML=XHC.map(c=>`<button data-c="${c}" style="--c:${c}" class="${c===XH?'on':''}" aria-label="조준점 색"><i></i></button>`).join('');document.documentElement.style.setProperty('--xh',XH)}
 $('xhc').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;XH=b.dataset.c;renderXH();saveSet()});renderXH();
 $('voiceOn').checked=VOICE;$('voiceOn').addEventListener('change',e=>{VOICE=e.target.checked;saveSet()});
-$('range').onclick=startRange;$('boardBtn').onclick=()=>{nickVal();show('boardCard');loadBoard()};$('boardBack').onclick=()=>show('card');$('tutBtn').onclick=startTutorial;setTimeout(()=>{dailyCheck();renderLv()},0);$('statsBtn').onclick=()=>{renderStats();show('statsCard')};$('stBack').onclick=()=>{renderLv();show('card')};setTimeout(renderLv,0);
+$('range').onclick=startRange;$('boardBtn').onclick=()=>{nickVal();show('boardCard');loadBoard()};$('boardBack').onclick=()=>show('card');$('acctBtn').onclick=openAcct;$('acBack').onclick=()=>{renderAcct();renderLv();show('card')};$('acLogin').onclick=doLogin;$('acSignup').onclick=doSignup;$('acOut').onclick=doLogout;$('acReset').onclick=doReset;$('tutBtn').onclick=startTutorial;setTimeout(()=>{dailyCheck();renderLv()},0);$('statsBtn').onclick=()=>{renderStats();show('statsCard')};$('stBack').onclick=()=>{renderLv();show('card')};setTimeout(renderLv,0);
 const hx=n=>'#'+n.toString(16).padStart(6,'0');
 function renderModes(){$('modes').innerHTML=MODES.map(m=>`<button data-k="${m.k}" style="--c:#ffd27a" class="${m===MODE?'on':''}">${m.n}</button>`).join('');$('mDesc').textContent=MODE.d}
 function renderMaps(){$('maps').innerHTML=MAPS.map(m=>`<button data-k="${m.k}" style="--c:#4fb3ff" class="${MAPSEL===m.k?'on':''}">${m.n}</button>`).join('')+`<button data-k="random" style="--c:#4fb3ff" class="${MAPSEL==='random'?'on':''}">랜덤</button>`;$('mapDesc').textContent=MAPSEL==='random'?'매 게임마다 맵을 무작위로 골라요':MAPS.find(m=>m.k===MAPSEL).d}
 try{const v=localStorage.getItem('cbMap');if(v&&(v==='random'||MAPS.some(m=>m.k===v)))MAPSEL=v}catch(e){}
 $('maps').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;MAPSEL=b.dataset.k;try{localStorage.setItem('cbMap',MAPSEL)}catch(e){}renderMaps()});renderMaps();
 $('modes').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;MODE=MODES.find(m=>m.k===b.dataset.k);renderModes();saveSet()});renderModes();
-function renderSkins(){$('skins').innerHTML=SKINS.map(k=>{const lock=k.price&&!PROG.owned[k.k];return`<button data-k="${k.k}" class="${k===SKIN?'on':''}${lock?' lock':''}" style="--a:${k.main?hx(k.main):'#3b3f46'};--b:${k.dark?hx(k.dark):'#6b4a32'}"><i></i>${k.n}${lock?` <small>🔒 ${k.price}</small>`:''}</button>`}).join('')+`<span class="coins">보유 코인 ${PROG.coins}</span>`}
-$('skins').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=SKINS.find(x=>x.k===b.dataset.k);if(k.price&&!PROG.owned[k.k]){if(PROG.coins<k.price){toast(`코인이 ${k.price-PROG.coins}개 부족해요`);return}if(b.dataset.ok!=='1'){b.dataset.ok='1';b.lastChild.textContent=` ${k.price}코인으로 해금? 한 번 더 누르기`;return}PROG.coins-=k.price;PROG.owned[k.k]=1;saveProg();toast(k.n+' 스킨 해금!')}SKIN=k;renderSkins();applySkin();saveSet()});setTimeout(()=>{renderSkins();applySkin()},0);
+function renderSkins(){$('skins').innerHTML=SKINS.map(k=>{const lock=k.price&&!PROG.owned[k.k]&&!(typeof isAdmin==='function'&&isAdmin());return`<button data-k="${k.k}" class="${k===SKIN?'on':''}${lock?' lock':''}" style="--a:${k.main?hx(k.main):'#3b3f46'};--b:${k.dark?hx(k.dark):'#6b4a32'}"><i></i>${k.n}${lock?` <small>🔒 ${k.price}</small>`:''}</button>`}).join('')+`<span class="coins">보유 코인 ${PROG.coins}</span>`}
+$('skins').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=SKINS.find(x=>x.k===b.dataset.k);if(k.price&&!PROG.owned[k.k]&&!isAdmin()){if(PROG.coins<k.price){toast(`코인이 ${k.price-PROG.coins}개 부족해요`);return}if(b.dataset.ok!=='1'){b.dataset.ok='1';b.lastChild.textContent=` ${k.price}코인으로 해금? 한 번 더 누르기`;return}PROG.coins-=k.price;PROG.owned[k.k]=1;saveProg();toast(k.n+' 스킨 해금!')}SKIN=k;renderSkins();applySkin();saveSet()});setTimeout(()=>{renderSkins();applySkin()},0);
 
 /* ---------- shop ---------- */
 const CATS=CATS0.concat([['special','특수 무기']]);
 const SIL={special:'M1 5h30v5H20v5h-5V10H8v4H4V10H1zM30 6h10v3H30z',pistol:'M2 6h14v4H8l-1 5H3z',smg:'M2 5h26v4h-8v6h-4l-1-6H8v5H4V9H2z',shotgun:'M1 6h34v3H14v2H9l-1 3H4V9H1z',rifle:'M1 6h36v3H24l1 6h-4l-2-6h-5l-1 4H6V9H1z',sniper:'M1 7h40v2H26v5h-3V9H8v4H4V9H1zM16 4h8v3h-8z',mg:'M1 5h38v4H22v6h-6V9H8v4H4V9H1z'};
-function renderShop(){$('shopCr').textContent='크레딧 '+S.pe.cr;const pe=S.pe;
+function renderShop(){if(isAdmin())S.pe.cr=999999;$('shopCr').textContent='크레딧 '+(isAdmin()?'무제한':S.pe.cr);const pe=S.pe;
  const col=CATS.map(([c,label])=>`<div class="cat"><h3>${label}</h3>`+Object.keys(GUNS).filter(k=>GUNS[k].c===c).map(k=>{const g=GUNS[k],own=pe.pri===k||pe.sec===k;
   return`<button class="item${own?' own':''}" data-k="${k}" ${own||pe.cr<g.price?'disabled':''}><b>${g.n}</b><span class="pr">${g.price||'무료'}</span><svg viewBox="0 0 42 16" preserveAspectRatio="xMinYMid meet"><path d="${SIL[c]}" fill="#e0c99c"/></svg><span class="ds">${g.ds}</span></button>`}).join('')+'</div>').join('');
- $('cats').innerHTML=col+`<div class="cat"><h3>실드</h3><button class="item${pe.sh>=25?' own':''}" data-k="light" ${pe.sh>=25||pe.cr<400?'disabled':''}><b>경량 실드</b><span class="pr">400</span><span class="ds">실드 25</span></button><button class="item${pe.sh>=50?' own':''}" data-k="heavy" ${pe.sh>=50||pe.cr<1000?'disabled':''}><b>중량 실드</b><span class="pr">1000</span><span class="ds">실드 50 · 피해 2/3 흡수</span></button></div><div class="cat"><h3>AI 로봇</h3><button class="item${S.autoOwned?' own':''}" data-k="autopilot" ${S.autoOwned||pe.cr<2500||S.mode==='mp'?'disabled':''}><b>AI 자동 조종</b><span class="pr">2500</span><span class="ds">${S.mode==='mp'?'멀티에서는 못 써요':'AI가 대신 움직이고 쏴요 · H로 켜고 끄기'}</span></button><button class="item${S.robotOn?' own':''}" data-k="robot" ${S.robotOn||pe.cr<3000||S.mode==='mp'?'disabled':''}><b>전투 로봇</b><span class="pr">3000</span><span class="ds">${S.mode==='mp'?'멀티에서는 못 써요':'나를 따라다니며 같이 싸우는 로봇'}</span></button></div>`}
+ $('cats').innerHTML=col+`<div class="cat"><h3>실드</h3><button class="item${pe.sh>=25?' own':''}" data-k="light" ${pe.sh>=25||pe.cr<400?'disabled':''}><b>경량 실드</b><span class="pr">400</span><span class="ds">실드 25</span></button><button class="item${pe.sh>=50?' own':''}" data-k="heavy" ${pe.sh>=50||pe.cr<1000?'disabled':''}><b>중량 실드</b><span class="pr">1000</span><span class="ds">실드 50 · 피해 2/3 흡수</span></button></div><div class="cat"><h3>AI 로봇</h3><button class="item${S.autoOwned?' own':''}" data-k="autopilot" ${S.autoOwned||pe.cr<2500||(S.mode==='mp'&&!isAdmin())?'disabled':''}><b>AI 자동 조종</b><span class="pr">2500</span><span class="ds">${S.mode==='mp'&&!isAdmin()?'멀티에서는 못 써요':'AI가 대신 움직이고 쏴요 · H로 켜고 끄기'}</span></button><button class="item${S.robotOn?' own':''}" data-k="robot" ${S.robotOn||pe.cr<3000||S.mode==='mp'?'disabled':''}><b>전투 로봇</b><span class="pr">3000</span><span class="ds">${S.mode==='mp'?'멀티에서는 못 써요':'나를 따라다니며 같이 싸우는 로봇'}</span></button></div>`}
 function canShop(){return S&&S.mode!=='rush'&&!S.lock&&(phase==='buy'||(S.mode==='range'||S.mode==='tdm'||S.mode==='mp')&&phase==='play')}
 $('cats').addEventListener('click',e=>{const b=e.target.closest('.item');if(!b||b.disabled||!canShop())return;buyItem(b.dataset.k);renderShop()});
-function buyItem(k){const pe=S.pe;if(k==='autopilot'){if(S.mode==='mp'||S.autoOwned||pe.cr<2500)return;pe.cr-=2500;S.autoOwned=true;P.auto=true;toast('AI 자동 조종 켜짐 · H로 끄고 켤 수 있어요');sfx(700,.2,.05,'triangle');return}
+function buyItem(k){const pe=S.pe;if(k==='autopilot'){if((S.mode==='mp'&&!isAdmin())||S.autoOwned||pe.cr<2500)return;pe.cr-=2500;S.autoOwned=true;P.auto=true;toast('AI 자동 조종 켜짐 · H로 끄고 켤 수 있어요');sfx(700,.2,.05,'triangle');return}
  if(k==='robot'){if(S.mode==='mp'||S.robotOn||pe.cr<3000)return;pe.cr-=3000;spawnRobot();sfx(500,.3,.05,'triangle');return}
 
  if(k==='light'){pe.cr-=400;pe.sh=P.sh=25}else if(k==='heavy'){pe.cr-=1000;pe.sh=P.sh=50}
@@ -847,7 +857,27 @@ function fbRoomFactory(db,uid){const tab=Math.random().toString(36).slice(2,8),m
    peers:()=>snap,onPeers:f=>{subs.push(f);setTimeout(()=>f({peers:snap}),0);return()=>{subs=subs.filter(x=>x!==f)}},
    leave:async()=>{alive=false;clearInterval(hb);ref.off();subs=[];try{await myRef.remove()}catch(e){}},connected:()=>true}}
  const lobby=make('lobby');lobby.join=async n=>make(String(n).replace(/[^a-z0-9_-]/gi,'').slice(0,40));return lobby}
-let FB=null,rankT=0;
+let FB=null,rankT=0,progT=0;
+const isAdmin=()=>!!(FB&&FB.admin);
+const AUTHMSG={'auth/email-already-in-use':'이미 가입된 이메일이에요. 로그인해 주세요.','auth/invalid-email':'이메일 형식이 맞지 않아요.','auth/weak-password':'비밀번호는 6자 이상이어야 해요.','auth/wrong-password':'비밀번호가 틀렸어요.','auth/user-not-found':'가입되지 않은 이메일이에요.','auth/invalid-credential':'이메일이나 비밀번호가 틀렸어요.','auth/invalid-login-credentials':'이메일이나 비밀번호가 틀렸어요.','auth/too-many-requests':'너무 많이 시도했어요. 잠시 뒤 다시 해주세요.','auth/operation-not-allowed':'Firebase에서 이메일 로그인이 아직 꺼져 있어요.','auth/credential-already-in-use':'이미 다른 계정에서 쓰는 이메일이에요.','auth/network-request-failed':'인터넷 연결을 확인해 주세요.'};
+function authErr(e){return AUTHMSG[e&&e.code]||('오류: '+((e&&e.code)||'알 수 없음'))}
+function renderAcct(){const b=$('acctBtn');if(!b)return;b.style.display=FB?'block':'none';b.textContent=FB&&FB.acct?((MP.nick||'내 계정')+(isAdmin()?' · 관리자':'')+' · 계정'):'로그인 · 회원가입'}
+function loadAccount(){FB.db.ref('users/'+FB.uid).once('value').then(sn=>{const v=sn.val()||{};FB.admin=v.admin===true;
+  if(v.nick){MP.nick=String(v.nick).slice(0,10);try{localStorage.setItem('cbNick',MP.nick)}catch(e){}}
+  if(v.prog&&typeof v.prog==='object'&&(+v.prog.xp||0)>=(PROG.xp||0)){Object.assign(PROG,v.prog);try{localStorage.setItem('cbProg',JSON.stringify(PROG))}catch(e){}}else pushProg(true);
+  renderAcct();renderLv();renderSkins();pushRank(true);if(isAdmin())toast('관리자 계정으로 로그인했어요')}).catch(()=>{renderAcct()})}
+function pushProg(force){if(!FB||!FB.acct)return;const now=Date.now();if(!force&&now-progT<8000)return;progT=now;FB.db.ref('users/'+FB.uid+'/prog').set(JSON.parse(JSON.stringify(PROG))).catch(()=>{})}
+function acctMsg(t,ok){const e=$('acMsg');e.textContent=t;e.style.color=ok?'var(--teal)':'var(--red)'}
+function doSignup(){const em=$('acEmail').value.trim(),pw=$('acPw').value,nk=$('acNick').value.trim().slice(0,10);if(!nk){acctMsg('닉네임을 적어 주세요.');return}acctMsg('가입하는 중…',true);
+ const cred=firebase.auth.EmailAuthProvider.credential(em,pw),cur=firebase.auth().currentUser;
+ const p=cur&&cur.isAnonymous?cur.linkWithCredential(cred):firebase.auth().createUserWithEmailAndPassword(em,pw);
+ p.then(r=>{const uid=(r.user||firebase.auth().currentUser).uid;MP.nick=nk;try{localStorage.setItem('cbNick',nk)}catch(e){}return FB.db.ref('users/'+uid).update({nick:nk,prog:JSON.parse(JSON.stringify(PROG))})})
+  .then(()=>{acctMsg('가입 완료! 이제 어느 기기에서든 로그인하면 기록이 이어져요.',true);setTimeout(()=>location.reload(),1200)}).catch(e=>acctMsg(authErr(e)))}
+function doLogin(){acctMsg('로그인하는 중…',true);firebase.auth().signInWithEmailAndPassword($('acEmail').value.trim(),$('acPw').value).then(()=>acctMsg('로그인했어요!',true)).catch(e=>acctMsg(authErr(e)))}
+function doLogout(){firebase.auth().signOut().then(()=>location.reload())}
+function doReset(){const em=$('acEmail').value.trim();if(!em){acctMsg('비밀번호를 잊었다면 이메일을 적고 다시 눌러 주세요.');return}firebase.auth().sendPasswordResetEmail(em).then(()=>acctMsg('비밀번호 재설정 메일을 보냈어요. 메일함을 확인해 주세요.',true)).catch(e=>acctMsg(authErr(e)))}
+function openAcct(){show('acctCard');const has=FB&&FB.acct;$('acForm').style.display=has?'none':'block';$('acIn').style.display=has?'block':'none';$('acMsg').textContent='';
+ if(has){$('acWho').textContent=(MP.nick||'플레이어')+' · '+(FB.user.email||'');$('acUid').textContent=FB.uid;$('acAdm').textContent=isAdmin()?'관리자 권한 있음: 모든 모드에서 무제한 돈 · 멀티에서도 AI 자동 조종':'일반 계정이에요'}}
 function pushRank(force){if(!FB)return;const now=Date.now();if(!force&&now-rankT<15000)return;rankT=now;const v=lvlOf(PROG.xp);
  FB.db.ref('cb/rank/peers/'+FB.uid+'_rank').set({p:{nm:(MP.nick||'플레이어').slice(0,10),lv:v.l,xp:PROG.xp|0,rr:PROG.rr|0,k:PROG.kills|0,w:PROG.wins|0,g:PROG.games|0},t:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{})}
 function loadBoard(){const box=$('boardBody');box.textContent='불러오는 중…';if(!FB){box.textContent='멀티 서버에 연결되지 않았어요.';return}pushRank(true);
@@ -855,7 +885,10 @@ function loadBoard(){const box=$('boardBody');box.textContent='불러오는 중�
   if(!rows.length){box.textContent='아직 기록이 없어요. 한 판 해보세요!';return}
   box.innerHTML='<table class="board"><thead><tr><th>#</th><th>이름</th><th>랭크</th><th>레벨</th><th>승리</th><th>처치</th></tr></thead><tbody>'+rows.map((r,i)=>{const rk=rankOf(r.rr||0);return`<tr class="${r.me?'me':''}"><td>${i+1}</td><td>${esc(String(r.nm).slice(0,10))}${r.me?' (나)':''}</td><td style="color:${rk.c}">${rk.n}</td><td>${+r.lv||1}</td><td>${+r.w||0}</td><td>${+r.k||0}</td></tr>`}).join('')+'</tbody></table>'}).catch(()=>{box.textContent='랭킹을 불러오지 못했어요.'})}
 const FB_ON=!!(typeof FIREBASE_CONFIG!=='undefined'&&FIREBASE_CONFIG.apiKey&&window.firebase);MP.fbErr=null;
-if(FB_ON){try{firebase.initializeApp(FIREBASE_CONFIG);firebase.auth().signInAnonymously().then(c=>{FB={db:firebase.database(),uid:c.user.uid};$('boardBtn').style.display='block';setTimeout(pushRank,1500);const r=fbRoomFactory(firebase.database(),c.user.uid);MP.room=r;MP.tried=true;r.onPeers(onLobby,()=>{});lobbyPres();mpLobbyUI()}).catch(e=>{MP.tried=true;MP.fbErr=(e&&e.code)||'unknown';mpLobbyUI()})}catch(e){MP.tried=true;MP.fbErr='init';}}
+if(FB_ON){try{firebase.initializeApp(FIREBASE_CONFIG);firebase.auth().onAuthStateChanged(u=>{if(!u){firebase.auth().signInAnonymously().catch(e=>{MP.tried=true;MP.fbErr=(e&&e.code)||'unknown';mpLobbyUI()});return}
+ if(FB){if(FB.uid!==u.uid)location.reload();return}
+ FB={db:firebase.database(),uid:u.uid,user:u,acct:!u.isAnonymous,admin:false};$('boardBtn').style.display='block';renderAcct();if(FB.acct)loadAccount();else setTimeout(pushRank,1500);
+ const r=fbRoomFactory(firebase.database(),u.uid);MP.room=r;MP.tried=true;r.onPeers(onLobby,()=>{});lobbyPres();mpLobbyUI()})}catch(e){MP.tried=true;MP.fbErr='init';}}
 else if(window.claude&&typeof claude.use==='function')claude.use('room').then(r=>{MP.room=r;MP.tried=true;if(r){r.onPeers(onLobby,()=>{});lobbyPres()}mpLobbyUI()}).catch(()=>{MP.tried=true;mpLobbyUI()});
 setTimeout(()=>{MP.tried=true;if($('mpCard').style.display==='block')mpLobbyUI()},11000);
 const QN={'1v1':2,'2v2':4};MP.q=null;MP.qt=0;MP.mt=null;MP.auto=null;MP.joined=new Set();
@@ -964,7 +997,7 @@ function saveOpt(){try{localStorage.setItem('cbOpt',JSON.stringify(OPT))}catch(e
 let PROG={coins:0,rr:0,owned:{},daily:null,xp:0,games:0,wins:0,kills:0,deaths:0,hs:0,plants:0,bestRange:0,ach:{},maps:{},agents:{}};
 try{Object.assign(PROG,JSON.parse(localStorage.getItem('cbProg')||'{}'))}catch(e){}
 const lvlOf=x=>{let l=1,need=1000;while(x>=need){x-=need;l++;need=1000+250*(l-1)}return{l,cur:x,need}};
-function saveProg(){try{localStorage.setItem('cbProg',JSON.stringify(PROG))}catch(e){}renderLv();if(typeof pushRank==='function')try{pushRank()}catch(e){}}
+function saveProg(){try{localStorage.setItem('cbProg',JSON.stringify(PROG))}catch(e){}renderLv();if(typeof pushProg==='function')try{pushProg()}catch(e){}if(typeof pushRank==='function')try{pushRank()}catch(e){}}
 function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(e._t);e._t=setTimeout(()=>e.style.opacity=0,2600)}
 function unlock(k){if(PROG.ach[k])return;PROG.ach[k]=Date.now();const a=ACH.find(x=>x[0]===k);if(a){toast('업적 달성! '+a[1]);sfx(880,.4,.06,'triangle');gainXP(300,true)}}
 function gainXP(n,quiet){const l0=lvlOf(PROG.xp).l;PROG.xp+=n;if(S)S.xpGain=(S.xpGain||0)+n;const l1=lvlOf(PROG.xp).l;if(l1>l0){PROG.coins+=100;toast('레벨 업! Lv.'+l1+' (+100 코인)');sfx(660,.5,.07,'triangle');if(l1>=10)unlock('lv10')}saveProg()}
@@ -1188,7 +1221,7 @@ function hud(){if(!P||!S)return;$('su').textContent=S.us;$('st').textContent=S.t
  const dots=t=>(S.mode==='tdm'||S.mode==='mp')?'':units.filter(u=>u.team===t).map(u=>`<i class="${u.alive?'':'x'}"></i>`).join('');$('du').innerHTML=dots(P.team);$('dt').innerHTML=dots(P.team==='atk'?'def':'atk');
  $('side').textContent=`${CURMAP.n} · 라운드 ${S.r} · ${P.team==='atk'?'공격':'수비'} · ${AG.n} · 난이도 ${D.n}`;
  $('hpN').textContent=Math.max(0,P.hp);$('hpN').classList.toggle('low',P.hp<=40);$('shN').textContent=P.sh>0?'+'+P.sh:'';$('hpB').style.width=Math.max(0,P.hp)+'%';
- const k=curKey(),g=GUNS[k];$('amN').textContent=g.c==='knife'?'—':P.rl>0?'장전 중':P.am[P.slot]+' / '+((P.rv&&P.rv[P.slot])??0);$('amN').style.color=g.c!=='knife'&&P.am[P.slot]===0&&!(P.rl>0)?'var(--red)':'';$('rlB').classList.toggle('hot',g.c!=='knife'&&P.am[P.slot]<=Math.ceil(g.mag*.25)&&!(P.rl>0));$('wpN').textContent=g.n+(CORE.who===P?' · 스파이크 보유':'');$('cr').textContent=S.pe.cr+' 크레딧';
+ const k=curKey(),g=GUNS[k];$('amN').textContent=g.c==='knife'?'—':P.rl>0?'장전 중':P.am[P.slot]+' / '+((P.rv&&P.rv[P.slot])??0);$('amN').style.color=g.c!=='knife'&&P.am[P.slot]===0&&!(P.rl>0)?'var(--red)':'';$('rlB').classList.toggle('hot',g.c!=='knife'&&P.am[P.slot]<=Math.ceil(g.mag*.25)&&!(P.rl>0));$('wpN').textContent=g.n+(CORE.who===P?' · 스파이크 보유':'');if(isAdmin()&&S.pe.cr<900000)S.pe.cr=999999;$('cr').textContent=(isAdmin()?'무제한':S.pe.cr)+' 크레딧';
  $('lQ').textContent=AG.q[0];$('lE').textContent=AG.e[0];$('lX').textContent=AG.x[0];$('nQ').textContent=P.qN;$('nE').textContent=P.eN;
  $('bQ').classList.toggle('off',!P.qN);$('bE').classList.toggle('off',!P.eN);$('ugI').style.width=(S.pe.ult/AG.ult*100)+'%';$('bX').classList.toggle('ready',S.pe.ult>=AG.ult);$('bX').classList.toggle('off',S.pe.ult<AG.ult);
  $('shopBtn').classList.toggle('show',canShop());$('apBtn').style.display=S.autoOwned?'block':'none';$('apBtn').style.borderColor=P.auto?'#7dffe6':'';$('cmdBtn').style.display=$('pingBtn').style.display=$('sbBtn').style.display=S.mode==='range'?'none':'block';$('pingBtn').style.display=S.mode==='mp'||S.mode==='range'?'none':'block';$('cmdBtn').firstChild.textContent=S.mode==='mp'?'채팅':'AI 명령';
